@@ -15,11 +15,13 @@ public class ThirdVersion {
     private final static String FILE_SEPARATOR = File.separator;
 
     public static void main(String[] args) {
-        Path rootDirectory = Paths.get("C:" + FILE_SEPARATOR + "test" + FILE_SEPARATOR);
-        Set<String> excludedDirectories = new HashSet<>();
-        excludedDirectories.add("results");
+//        Path rootDirectory = Paths.get("C:" + FILE_SEPARATOR + "test" + FILE_SEPARATOR);
+        Path rootDirectory = Paths.get("C:" + FILE_SEPARATOR);
         String resultFileDirectory = "C:" + FILE_SEPARATOR + "results";
         String resultFile = resultFileDirectory + FILE_SEPARATOR + "resultFile.txt";
+
+        Set<String> excludedDirectories = new HashSet<>();
+        excludedDirectories.add(resultFileDirectory);
 
         try(
                 FileWriter fileWriter = new FileWriter(resultFile, true);
@@ -48,11 +50,15 @@ public class ThirdVersion {
                         }
                     })
                     .filter(Files::isReadable)
+                    .filter(path -> !excludedDirectories.contains(path.toAbsolutePath().toString()))
                     .forEach(path -> {
-                        if (Files.isDirectory(path) && !excludedDirectories.contains(path.getFileName().toString())) {
+                        if (Files.isDirectory(path)) {
                             process(writer, path, excludedDirectories);
                         } else {
                             try {
+                                if (path.toAbsolutePath().toString().equals("C:\\Gradle\\gradle-7.0.1\\src\\platform-base\\org\\gradle\\language\\base\\internal\\compile\\VersionAwareCompiler.java")) {
+                                    System.out.println(path.toAbsolutePath());
+                                }
                                 writer
                                         .append(path.toAbsolutePath().toString())
                                         .append(System.lineSeparator());
